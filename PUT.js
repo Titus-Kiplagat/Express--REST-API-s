@@ -1,5 +1,6 @@
+
 const express = require("express");
-const Joi = require('joi');
+const { validateCourse } = require("./validation");
 const app = express();
 
 app.use(express.json());
@@ -19,11 +20,8 @@ app.put("/api/courses/:id", (req, res) => {
   if (!course)
     res.status(404).send("The course with the given ID was not found!");
 	
-	const schema = Joi.object({
-		courseName: Joi.string().min(5).required()
-	})
-	const result = schema.validate(req.body);
-	if (result.error) res.status(400).send(result.error.details[0].message);
+	const {error} = validateCourse(req.body);
+	if (error) res.status(400).send(error.details[0].message);
 
 	course.courseName = req.body.courseName;
 	res.send(course)
